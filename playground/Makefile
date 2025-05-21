@@ -1,5 +1,4 @@
 IMAGE_NAME := supervisor-test
-TAG := latest
 CONTAINER_NAME := supervisor-test-container
 
 .PHONY: all
@@ -7,24 +6,24 @@ all: build run
 
 .PHONY: build
 build:
-	docker build -t $(IMAGE_NAME):$(TAG) .
+	docker build -t $(IMAGE_NAME) .
 
 .PHONY: run
 run: build
-	docker run -d --name $(CONTAINER_NAME) $(IMAGE_NAME):$(TAG)
+	docker run -d  --name $(CONTAINER_NAME) --rm $(IMAGE_NAME)
 
 .PHONY: shell
 shell: run
 	docker exec -it $(CONTAINER_NAME) bash
 
 .PHONY: re
-re: clean run
+re: down run
+
+.PHONY: down
+down:
+	docker stop $(CONTAINER_NAME) || true
 
 .PHONY: clean
 clean:
-	docker stop $(CONTAINER_NAME)
-
-.PHONY: fclean
-fclean: clean
 	docker rm $(CONTAINER_NAME)
-	docker rmi $(IMAGE_NAME):$(TAG)
+	docker rmi $(IMAGE_NAME)
