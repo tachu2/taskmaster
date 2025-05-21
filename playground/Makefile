@@ -13,7 +13,7 @@ run: build
 	docker run -d  --name $(CONTAINER_NAME) --rm $(IMAGE_NAME)
 
 .PHONY: shell
-shell: run
+shell:
 	docker exec -it $(CONTAINER_NAME) bash
 
 .PHONY: re
@@ -24,6 +24,6 @@ down:
 	docker stop $(CONTAINER_NAME) || true
 
 .PHONY: clean
-clean:
+clean: down
 	docker rm $(CONTAINER_NAME)
 	docker rmi $(IMAGE_NAME)
