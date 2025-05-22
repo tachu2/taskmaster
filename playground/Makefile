@@ -10,7 +10,7 @@ build:
 
 .PHONY: run
 run: build
-	docker run -d  --name $(CONTAINER_NAME) --rm $(IMAGE_NAME)
+	docker run -d -p 9001:9001 --name $(CONTAINER_NAME) --rm $(IMAGE_NAME)
 
 .PHONY: shell
 shell:
