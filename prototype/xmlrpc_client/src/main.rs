@@ -34,13 +34,6 @@ async fn main() -> Result<(), String> {
         .map_err(|error| error.to_string())?;
     println!("Server counter: {:?}", result);
 
-    match result.get("name") {
-        Some(val) => match val.as_str() {
-            Ok(name) => println!("Name: {}", name),
-            Err(_) => println!("The 'name' field is not a valid string."),
-        },
-        None => println!("No name found in person data."),
-    }
     //let age = result.get("age").as_i32();
     //match age {
     //    Some(age) => println!("Person age: {age}"),

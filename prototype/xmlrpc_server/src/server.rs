@@ -8,7 +8,7 @@ use std::{
     collections::{hash_map::Values, BTreeMap, HashMap},
 };
 
-#[derive(TryToValue)]
+#[derive(Debug, TryToValue, TryFromValue)]
 struct Person {
     name: String,
     age: i32,
@@ -34,6 +34,10 @@ fn person(params: &[Value], _headers: HeaderMap) -> HandlerResult {
         age: 30,
         jobs: vec!["engineer".to_string(), "sales".to_string()],
     };
+    let re = p.try_to_value()?;
+    //println!("re: {:?}", re);
+    let re: Person = TryFromValue::try_from_value(&re)?;
+    println!("person: {:?}", re);
     Ok(p.try_to_value()?)
 }
 
