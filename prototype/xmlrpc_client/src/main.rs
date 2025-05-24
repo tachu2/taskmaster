@@ -3,6 +3,7 @@
 //! Run this example to test interaction with the `server` example from the
 //! `dxr_server_axum` crate.
 
+use dxr::Value;
 use std::collections::HashMap;
 
 use dxr_client::{ClientBuilder, Url};
@@ -26,6 +27,25 @@ async fn main() -> Result<(), String> {
         .await
         .map_err(|error| error.to_string())?;
     println!("Server counter: {:?}", result);
+
+    let result: HashMap<String, Value> = client
+        .call("person", ())
+        .await
+        .map_err(|error| error.to_string())?;
+    println!("Server counter: {:?}", result);
+
+    match result.get("name") {
+        Some(val) => match val.as_str() {
+            Ok(name) => println!("Name: {}", name),
+            Err(_) => println!("The 'name' field is not a valid string."),
+        },
+        None => println!("No name found in person data."),
+    }
+    //let age = result.get("age").as_i32();
+    //match age {
+    //    Some(age) => println!("Person age: {age}"),
+    //    None => println!("No age found in person data."),
+    //}
 
     Ok(())
 }

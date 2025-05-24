@@ -1,9 +1,19 @@
-use dxr::{chrono::Date, TryFromParams, TryToValue, Value};
+use dxr::{DxrError, TryFromParams, TryFromValue, TryToValue, Value};
 use dxr_server::{
     async_trait, axum::http::HeaderMap, Handler, HandlerFn, HandlerResult, RouteBuilder, Server,
 };
 use iso8601;
-use std::collections::{BTreeMap, HashMap};
+use std::{
+    any::TypeId,
+    collections::{hash_map::Values, BTreeMap, HashMap},
+};
+
+#[derive(TryToValue)]
+struct Person {
+    name: String,
+    age: i32,
+    jobs: Vec<String>,
+}
 
 fn hello(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let name = String::try_from_params(params)?;
@@ -18,11 +28,21 @@ fn map_h(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     Ok(map.try_to_value()?)
 }
 
+fn person(params: &[Value], _headers: HeaderMap) -> HandlerResult {
+    let p = Person {
+        name: "p1".to_string(),
+        age: 30,
+        jobs: vec!["engineer".to_string(), "sales".to_string()],
+    };
+    Ok(p.try_to_value()?)
+}
+
 pub async fn serve() -> () {
     let route = RouteBuilder::new()
         .set_path("/")
         .add_method("hello", Box::new(hello as HandlerFn))
         .add_method("map_h", Box::new(map_h as HandlerFn))
+        .add_method("person", Box::new(person as HandlerFn))
         .build();
     let mut server = Server::from_route(route);
 
