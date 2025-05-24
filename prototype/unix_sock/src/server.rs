@@ -1,3 +1,29 @@
-pub fn serve() -> () {
+use dxr::{TryFromParams, TryToValue, Value};
+use dxr_server::{
+    async_trait, axum::http::HeaderMap, Handler, HandlerFn, HandlerResult, RouteBuilder, Server,
+};
+
+fn hello(params: &[Value], _headers: HeaderMap) -> HandlerResult {
+    let name = String::try_from_params(params)?;
+    Ok(format!("Handler function says: Hello, {name}!").try_to_value()?)
+}
+
+pub async fn serve() -> () {
     println!("Server is running...");
+    let route = RouteBuilder::new()
+        .set_path("/")
+        .add_method("hello", Box::new(hello as HandlerFn))
+        .build();
+    let mut server = Server::from_route(route);
+    let barrier = server.shutdown_trigger();
+
+    //tokio::spawn(async move {
+    //    tokio::signal::ctrl_c().await.unwrap();
+    //    barrier.notify_one();
+    //});
+
+    server
+        .serve("0.0.0.0:3000".parse().unwrap())
+        .await
+        .expect("Failed to run server.")
 }

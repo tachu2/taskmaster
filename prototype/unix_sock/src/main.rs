@@ -1,6 +1,7 @@
 mod server;
 
-fn main() {
-    server::serve();
+#[tokio::main]
+async fn main() {
+    server::serve().await;
     println!("Hello, world!");
 }
