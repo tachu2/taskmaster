@@ -5,11 +5,11 @@ use dxr_server::{
 
 fn hello(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let name = String::try_from_params(params)?;
-    Ok(format!("Handler function says: Hello, {name}!").try_to_value()?)
+    //Ok(format!("Handler function says: Hello, {name}!").try_to_value()?)
+    Ok(true.try_to_value()?)
 }
 
 pub async fn serve() -> () {
-    println!("Server is running...");
     let route = RouteBuilder::new()
         .set_path("/")
         .add_method("hello", Box::new(hello as HandlerFn))
@@ -22,6 +22,7 @@ pub async fn serve() -> () {
     //    barrier.notify_one();
     //});
 
+    println!("Server is running on 3000...");
     server
         .serve("0.0.0.0:3000".parse().unwrap())
         .await
