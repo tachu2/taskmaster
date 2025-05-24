@@ -5,8 +5,8 @@ use dxr_server::{
 
 fn hello(params: &[Value], _headers: HeaderMap) -> HandlerResult {
     let name = String::try_from_params(params)?;
-    //Ok(format!("Handler function says: Hello, {name}!").try_to_value()?)
-    Ok(true.try_to_value()?)
+    Ok(format!("Handler function says: Hello, {name}!").try_to_value()?)
+    //Ok(true.try_to_value()?)
 }
 
 pub async fn serve() -> () {

@@ -1,0 +1,11 @@
+[package]
+name = "xmlrpc_client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dxr = "0.7.1"
+dxr_client = { version = "0.7.1", features = ["reqwest"] }
+reqwest = "0.12.15"
+tokio = {version = "1.45.0", features = ["full"]}
+xmlrpc = "0.15.1"
