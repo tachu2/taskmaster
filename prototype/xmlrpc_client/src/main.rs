@@ -3,6 +3,8 @@
 //! Run this example to test interaction with the `server` example from the
 //! `dxr_server_axum` crate.
 
+use std::collections::HashMap;
+
 use dxr_client::{ClientBuilder, Url};
 
 #[tokio::main]
@@ -19,17 +21,11 @@ async fn main() -> Result<(), String> {
         .map_err(|error| error.to_string())?;
     println!("Server message: {result}");
 
-    let result: i32 = client
-        .call("countme", ())
+    let result: HashMap<String, bool> = client
+        .call("map_h", ())
         .await
         .map_err(|error| error.to_string())?;
-    println!("Server counter: {result}");
-
-    let result: i32 = client
-        .call("add", (1, 2))
-        .await
-        .map_err(|error| error.to_string())?;
-    println!("1 + 2 = {result}");
+    println!("Server counter: {:?}", result);
 
     Ok(())
 }

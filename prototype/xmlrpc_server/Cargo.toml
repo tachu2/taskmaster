@@ -8,3 +8,4 @@ dxr = "0.7.1"
 dxr_server = { version = "0.7.1", features = ["axum"] }
 xmlrpc = "0.15.1"
 tokio = { version = "1", features = ["full"] }
+iso8601 = "0.6.3"
