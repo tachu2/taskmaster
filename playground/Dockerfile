@@ -5,5 +5,6 @@ RUN apt-get update && apt-get install -y \
   curl
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-# CMD ["/usr/bin/supervisord"]
-CMD ["tail", "-f", "/dev/null"]
+
+CMD ["/usr/bin/supervisord"]
+# CMD ["tail", "-f", "/dev/null"]
