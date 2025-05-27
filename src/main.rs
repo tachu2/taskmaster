@@ -1,8 +1,7 @@
 mod readline;
 
 fn main() {
-    let v = readline::readline();
-    match v {
+    match readline::readline() {
         Ok(list) => {
             println!("{:?}", list);
         }
