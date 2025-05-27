@@ -1,3 +1,13 @@
+mod readline;
+
 fn main() {
-    println!("Hello, world!");
+    let v = readline::readline();
+    match v {
+        Ok(list) => {
+            println!("{:?}", list);
+        }
+        Err(e) => {
+            eprintln!("Error reading line: {}", e);
+        }
+    }
 }
