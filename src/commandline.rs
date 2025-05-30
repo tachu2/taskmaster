@@ -41,4 +41,12 @@ impl CommandLine {
             buf.split_whitespace().map(|s| s.to_string()).collect();
         CommandLine::new_from_list(list).ok_or_else(|| CommandLineError::NoCommand)
     }
+
+    pub fn get_command(&self) -> &str {
+        &self.command
+    }
+
+    pub fn get_args(&self) -> &LinkedList<String> {
+        &self.args
+    }
 }
