@@ -1,9 +1,9 @@
-mod readline;
+mod commandline;
 
 fn main() {
-    match readline::readline() {
-        Ok(list) => {
-            println!("{:?}", list);
+    match commandline::CommandLine::readline() {
+        Ok(line) => {
+            println!("{:?}", line);
         }
         Err(e) => {
             eprintln!("Error reading line: {}", e);
