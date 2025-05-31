@@ -12,8 +12,8 @@ pub struct CommandLine {
 pub enum CommandLineError {
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
-    #[error("No command")]
-    NoCommand,
+    #[error("empty command.")]
+    EmptyCommand,
 }
 
 impl CommandLine {
@@ -39,7 +39,7 @@ impl CommandLine {
         stdin.read_line(&mut buf)?;
         let list: std::collections::LinkedList<String> =
             buf.split_whitespace().map(|s| s.to_string()).collect();
-        CommandLine::new_from_list(list).ok_or_else(|| CommandLineError::NoCommand)
+        CommandLine::new_from_list(list).ok_or_else(|| CommandLineError::EmptyCommand)
     }
 
     pub fn get_command(&self) -> &String {

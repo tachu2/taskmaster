@@ -2,9 +2,9 @@ use std::collections::{HashSet, LinkedList};
 
 #[derive(Debug)]
 pub struct ProgramSection {
-    programname: String,
-    command: LinkedList<String>,
-    processnames: HashSet<String>,
+    pub programname: String,
+    pub command: LinkedList<String>,
+    pub processnames: HashSet<String>,
 }
 
 impl ProgramSection {

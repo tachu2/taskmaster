@@ -4,7 +4,7 @@ use crate::config::program_section::ProgramSection;
 
 #[derive(Debug)]
 pub struct Config {
-    pub(crate) programs: HashMap<String, ProgramSection>,
+    programs: HashMap<String, ProgramSection>,
 }
 
 impl Config {
@@ -18,7 +18,7 @@ impl Config {
         self.programs.get(name)
     }
 
-    pub fn programs(&self) -> &HashMap<String, ProgramSection> {
-        &self.programs
+    pub fn find_program(&self, program: &String) -> Option<&ProgramSection> {
+        self.programs.get(program)
     }
 }

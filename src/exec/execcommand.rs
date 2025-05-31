@@ -7,10 +7,12 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ExecError {
-    #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
-    #[error("No command")]
-    NoCommand,
+    #[error("invalid arguments.")]
+    InvalidArgs,
+    #[error("invalid arguments length.")]
+    InvalidLength,
+    #[error("process name not found.")]
+    ProcessNameNotFound,
 }
 
 pub fn exec(command: CommandLine, config: &Config) {
