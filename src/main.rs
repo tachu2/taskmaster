@@ -1,4 +1,5 @@
 mod commandline;
+mod config;
 mod exec;
 
 use commandline::CommandLine;

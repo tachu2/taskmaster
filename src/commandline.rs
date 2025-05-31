@@ -42,7 +42,7 @@ impl CommandLine {
         CommandLine::new_from_list(list).ok_or_else(|| CommandLineError::NoCommand)
     }
 
-    pub fn get_command(&self) -> &str {
+    pub fn get_command(&self) -> &String {
         &self.command
     }
 

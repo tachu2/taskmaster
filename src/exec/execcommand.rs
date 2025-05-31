@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use crate::commandline::CommandLine;
+use crate::config::config::Config;
 use crate::exec::commands::add;
 use thiserror::Error;
 
@@ -12,8 +13,6 @@ pub enum ExecError {
     NoCommand,
 }
 
-pub fn exec(command: CommandLine) {
-    add(command.get_args()).unwrap_or_else(|e| {
-        eprintln!("Error executing command: {}", e);
-    });
+pub fn exec(command: CommandLine, config: &Config) {
+    add(command.get_args(), config);
 }
