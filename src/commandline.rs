@@ -1,19 +1,12 @@
 use std::collections::LinkedList;
 use std::io::{self, Write};
-use thiserror::Error;
+
+use crate::errors::CommandLineError;
 
 #[derive(Debug, Clone)]
 pub struct CommandLine {
     command: String,
     args: LinkedList<String>,
-}
-
-#[derive(Error, Debug)]
-pub enum CommandLineError {
-    #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
-    #[error("empty command.")]
-    EmptyCommand,
 }
 
 impl CommandLine {
