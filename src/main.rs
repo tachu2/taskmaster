@@ -1,7 +1,5 @@
 mod commandline;
-mod config;
 mod errors;
-mod exec;
 
 use commandline::CommandLine;
 
