@@ -1,4 +1,7 @@
-#[derive(Debug)]
+use lazy_static::lazy_static;
+use std::sync::Mutex;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LogLevel {
     DEBUG,
     INFO,
@@ -7,29 +10,37 @@ pub enum LogLevel {
     CRITICAL,
 }
 
-#[derive(Debug)]
 pub struct Logger {
     level: LogLevel,
-    instance: Option<&'static Self>,
 }
 
 impl Logger {
-    fn new(level: LogLevel) -> Self {
-        Logger {
-            level,
-            instance: None,
+    pub fn log(&self, level: LogLevel, message: &str) {
+        if level >= self.level {
+            match level {
+                LogLevel::ERROR | LogLevel::CRITICAL => {
+                    eprintln!("[{:?}] {}", level, message);
+                }
+                _ => {
+                    println!("[{:?}] {}", level, message);
+                }
+            }
         }
     }
 
-    pub fn get() -> &'static Logger {
-        static LOGGER: std::sync::OnceLock<Logger> = std::sync::OnceLock::new();
-        LOGGER.get_or_init(|| Logger::new(LogLevel::INFO))
+    pub fn change_level(&mut self, level: LogLevel) {
+        self.level = level;
     }
+}
 
-    pub fn change_level(level: LogLevel) {
-        let logger = Logger::get();
-        // This is not how you modify a static.  It's also not thread safe.
-        // logger.level = level;
-        println!("Attempting to change log level to: {:?}", level);
-    }
+lazy_static! {
+    static ref LOGGER: Mutex<Logger> = Mutex::new(Logger {
+        level: LogLevel::DEBUG
+    });
+}
+
+///
+///INFO: never panic as long as it runs on single thread or does not panic when locking
+pub fn get_logger() -> std::sync::MutexGuard<'static, Logger> {
+    LOGGER.lock().expect("Failed to lock LOGGER")
 }

@@ -3,10 +3,11 @@ mod config;
 mod errors;
 
 use commandline::CommandLine;
-use config::logger::{LogLevel, Logger};
+use config::logger::{get_logger, LogLevel, Logger};
 
 fn main() {
-    Logger::change_level(LogLevel::DEBUG);
+    let logger = get_logger();
+    logger.log(LogLevel::INFO, "Application started");
     match commandline::CommandLine::readline() {
         Ok(line) => {
             println!("Command: {:?}", line);
