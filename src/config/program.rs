@@ -2,9 +2,10 @@ use std::collections::{HashSet, LinkedList};
 
 #[derive(Debug)]
 pub struct Program {
-    pub programname: String,
-    pub command: LinkedList<String>,
-    pub processnames: HashSet<String>,
+    pub(in crate::config) programname: String, // unique identifier for the program
+    pub(in crate::config) command: LinkedList<String>,
+    pub(in crate::config) numprocs: usize, // number of processes to start
+    pub(in crate::config) processnames: HashSet<String>,
 }
 
 impl Program {

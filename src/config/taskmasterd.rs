@@ -2,8 +2,8 @@ use super::logger::LogLevel;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Taskmasterd {
-    logfile: String,
-    loglevel: LogLevel,
+    pub(in crate::config) logfile: String,
+    pub(in crate::config) loglevel: LogLevel,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
