@@ -19,7 +19,12 @@ pub enum ExecError {
     ProcessNameNotFound,
 }
 
+#[derive(Error, Debug)]
 pub enum ConfigParseError {
-    IniError,
+    #[error("config file parse error: {0}")]
+    IniError(#[from] ini::Error),
+    #[error("config file not found.")]
     FileNotFound,
+    #[error("cannot read a file: {0}")]
+    PermissionDenied(String),
 }
