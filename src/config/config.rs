@@ -23,12 +23,18 @@ impl Config {
     }
 
     pub fn find_config() -> Result<String, ConfigParseError> {
-        const DEFAULT_CONFIG_PATHS: [&str; 1] = ["./taskmaster.conf"];
-
-        DEFAULT_CONFIG_PATHS
+        config::DEFAULT_CONFIG_PATHS
             .iter()
             .find(|p| std::path::Path::new(p).is_file())
             .map(|p| p.to_string())
             .ok_or(ConfigParseError::FileNotFound)
+    }
+}
+
+mod config {
+    pub const DEFAULT_CONFIG_PATHS: [&str; 1] = ["./taskmaster.conf"];
+    mod section {
+        pub const TASKMASTERD: &str = "taskmasterd";
+        pub const PROGRAM: &str = "program";
     }
 }

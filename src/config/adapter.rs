@@ -16,8 +16,11 @@ impl Adapter {
 
         for (sec, prop) in ini.iter() {
             println!("Section: {:?}", sec);
-            for (k, v) in prop.iter() {
-                println!("{}:{}", k, v);
+            for (key, value) in prop.iter() {
+                match key {
+                    _ => todo!(),
+                }
+                println!("{}:{}", key, value);
             }
         }
         Ok(())
