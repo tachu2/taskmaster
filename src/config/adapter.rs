@@ -12,6 +12,14 @@ impl Adapter {
             Some(path) => path.to_string(),
             None => Config::find_config()?,
         };
+        let ini = Ini::load_from_file(file_path)?;
+
+        for (sec, prop) in ini.iter() {
+            println!("Section: {:?}", sec);
+            for (k, v) in prop.iter() {
+                println!("{}:{}", k, v);
+            }
+        }
         Ok(())
     }
 }
