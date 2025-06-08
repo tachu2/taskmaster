@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use crate::{config::program_section::ProgramSection, errors::ConfigParseError};
+use crate::{config::program::Program, errors::ConfigParseError};
 
 #[derive(Debug)]
 pub struct Config {
-    programs: HashMap<String, ProgramSection>,
+    programs: HashMap<String, Program>,
 }
 
 impl Config {
@@ -14,11 +14,11 @@ impl Config {
         }
     }
 
-    pub fn get_program(&self, name: &String) -> Option<&ProgramSection> {
+    pub fn get_program(&self, name: &String) -> Option<&Program> {
         self.programs.get(name)
     }
 
-    pub fn find_program(&self, program: &String) -> Option<&ProgramSection> {
+    pub fn find_program(&self, program: &String) -> Option<&Program> {
         self.programs.get(program)
     }
 
@@ -33,8 +33,4 @@ impl Config {
 
 mod config {
     pub const DEFAULT_CONFIG_PATHS: [&str; 1] = ["./taskmaster.conf"];
-    mod section {
-        pub const TASKMASTERD: &str = "taskmasterd";
-        pub const PROGRAM: &str = "program";
-    }
 }

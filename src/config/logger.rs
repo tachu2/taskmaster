@@ -15,12 +15,6 @@ pub struct Logger {
 }
 
 impl Logger {
-    pub fn log(&self, level: LogLevel, message: &str) {
-        if level >= self.level {
-            println!("[{:?}] {}", level, message);
-        }
-    }
-
     pub fn debug(&self, message: &str) {
         if self.level > LogLevel::DEBUG {
             return;

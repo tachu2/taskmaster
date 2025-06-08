@@ -1,27 +1,35 @@
+use super::logger::LogLevel;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Taskmasterd {
+    logfile: String,
+    loglevel: LogLevel,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Taskmasterd {
+pub enum TaskmasterdSection {
     Logfile,
     Loglevel,
 }
 
-impl Taskmasterd {
+impl TaskmasterdSection {
     pub fn as_str(&self) -> &'static str {
         match self {
-            Taskmasterd::Logfile => section::LOGFILE,
-            Taskmasterd::Loglevel => section::LOGLEVEL,
+            TaskmasterdSection::Logfile => taskmasterd::LOGFILE,
+            TaskmasterdSection::Loglevel => taskmasterd::LOGLEVEL,
         }
     }
 
     pub fn from_str(s: &str) -> Option<Self> {
         match s {
-            section::LOGFILE => Some(Taskmasterd::Logfile),
-            section::LOGLEVEL => Some(Taskmasterd::Loglevel),
+            taskmasterd::LOGFILE => Some(TaskmasterdSection::Logfile),
+            taskmasterd::LOGLEVEL => Some(TaskmasterdSection::Loglevel),
             _ => None,
         }
     }
 }
 
-mod section {
+mod taskmasterd {
     pub const LOGFILE: &str = "logfile";
     pub const LOGLEVEL: &str = "loglevel";
 }
