@@ -21,6 +21,41 @@ impl Logger {
         }
     }
 
+    pub fn debug(&self, message: &str) {
+        if self.level > LogLevel::DEBUG {
+            return;
+        }
+        println!("[{:?}] {}", LogLevel::DEBUG, message);
+    }
+
+    pub fn info(&self, message: &str) {
+        if self.level > LogLevel::INFO {
+            return;
+        }
+        println!("[{:?}] {}", LogLevel::INFO, message);
+    }
+
+    pub fn warn(&self, message: &str) {
+        if self.level > LogLevel::WARN {
+            return;
+        }
+        println!("[{:?}] {}", LogLevel::WARN, message);
+    }
+
+    pub fn error(&self, message: &str) {
+        if self.level > LogLevel::ERROR {
+            return;
+        }
+        println!("[{:?}] {}", LogLevel::ERROR, message);
+    }
+
+    pub fn critical(&self, message: &str) {
+        if self.level > LogLevel::CRITICAL {
+            return;
+        }
+        println!("[{:?}] {}", LogLevel::CRITICAL, message);
+    }
+
     pub fn change_level(&mut self, level: LogLevel) {
         self.level = level;
     }

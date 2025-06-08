@@ -7,7 +7,7 @@ use config::logger::{get_logger, LogLevel, Logger};
 
 fn main() {
     let logger = get_logger();
-    logger.log(LogLevel::INFO, "Application started");
+    logger.info("Starting the application...");
     match commandline::CommandLine::readline() {
         Ok(line) => {
             println!("Command: {:?}", line);
