@@ -6,7 +6,7 @@ use ini::Ini;
 impl Adapter {
     pub fn parse_config(
         config: &mut Config,
-        file_path: Option<&str>,
+        file_path: Option<&String>,
     ) -> Result<(), ConfigParseError> {
         let file_path = match file_path {
             Some(path) => path.to_string(),
