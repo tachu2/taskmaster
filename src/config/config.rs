@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::config::program_section::ProgramSection;
+use crate::{config::program_section::ProgramSection, errors::ConfigParseError};
 
 #[derive(Debug)]
 pub struct Config {
@@ -20,5 +20,15 @@ impl Config {
 
     pub fn find_program(&self, program: &String) -> Option<&ProgramSection> {
         self.programs.get(program)
+    }
+
+    pub fn find_config() -> Result<String, ConfigParseError> {
+        const DEFAULT_CONFIG_PATHS: [&str; 1] = ["./taskmaster.conf"];
+
+        DEFAULT_CONFIG_PATHS
+            .iter()
+            .find(|p| std::path::Path::new(p).is_file())
+            .map(|p| p.to_string())
+            .ok_or(ConfigParseError::FileNotFound)
     }
 }

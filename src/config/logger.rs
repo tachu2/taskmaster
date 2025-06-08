@@ -63,7 +63,7 @@ impl Logger {
 
 lazy_static! {
     static ref LOGGER: Mutex<Logger> = Mutex::new(Logger {
-        level: LogLevel::DEBUG
+        level: LogLevel::WARN
     });
 }
 

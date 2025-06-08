@@ -1,3 +1,4 @@
+use ini::Error as IniError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -16,4 +17,9 @@ pub enum ExecError {
     InvalidLength,
     #[error("process name not found.")]
     ProcessNameNotFound,
+}
+
+pub enum ConfigParseError {
+    IniError,
+    FileNotFound,
 }
