@@ -17,14 +17,7 @@ pub struct Logger {
 impl Logger {
     pub fn log(&self, level: LogLevel, message: &str) {
         if level >= self.level {
-            match level {
-                LogLevel::ERROR | LogLevel::CRITICAL => {
-                    eprintln!("[{:?}] {}", level, message);
-                }
-                _ => {
-                    println!("[{:?}] {}", level, message);
-                }
-            }
+            println!("[{:?}] {}", level, message);
         }
     }
 
