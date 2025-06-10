@@ -4,12 +4,39 @@ use std::collections::{HashSet, LinkedList};
 pub struct Program {
     pub(in crate::config) programname: String, // unique identifier for the program
     pub(in crate::config) command: LinkedList<String>,
-    pub(in crate::config) numprocs: usize, // number of processes to start
+    pub(in crate::config) numprocs: u8, // number of processes to start
+    pub(in crate::config) autostart: bool, // whether to start the program automatically
+    pub(in crate::config) autorestart: program::AutoRestart, // whether to restart the program automatically
+    pub(in crate::config) exitcodes: LinkedList<i32>,        // exit codes to consider successful
+    pub(in crate::config) startsecs: u8, // seconds to wait before considering the program started
+    pub(in crate::config) startretries: u8, // number of retries to start the program
+    pub(in crate::config) stopsignal: i32, // signal to send to stop the program
+    pub(in crate::config) stopwaitsecs: u32, // seconds to wait for the program to stop
+    pub(in crate::config) stdout_logfile: String,
+    pub(in crate::config) stderr_logfile: String,
+    pub(in crate::config) enviroment: LinkedList<String>, // environment variables to set for the program
+    pub(in crate::config) directory: String,              // working directory for the program
+    pub(in crate::config) umask: program::Umask,          // working directory for the program
     pub(in crate::config) processnames: HashSet<String>,
 }
 
 impl Program {
-    pub fn new(programname: String) -> Self {
+    pub fn new(
+        programname: String,
+        command: LinkedList<String>,
+        numprocs: Option<u8>,
+        autostart: Option<bool>,
+        autorestart: Option<program::AutoRestart>,
+        exitcodes: Option<LinkedList<i32>>,
+        startsecs: Option<u8>,
+        startretries: Option<u8>,
+        stopsignal: Option<i32>,
+        stdout_logfile: String,
+        stderr_logfile: String,
+        environment: Option<LinkedList<String>>,
+        durectory: Option<String>,
+        umask: Option<program::Umask>,
+    ) -> Self {
         Program {
             programname,
             command: LinkedList::new(),
@@ -99,4 +126,17 @@ mod program {
     pub const ENVIRONMENT: &str = "environment";
     pub const DIRECTORY: &str = "directory";
     pub const UMASK: &str = "umask";
+
+    #[derive(Debug, PartialEq, Eq)]
+    pub enum AutoRestart {
+        Unexpected,
+        True,
+        False,
+    }
+
+    #[derive(Debug, PartialEq, Eq)]
+    pub enum Umask {
+        Taskmaster, // use taskmaster's umask
+        Umask(u16), // use a specific umask
+    }
 }

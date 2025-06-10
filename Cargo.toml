@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 lazy_static = "1.5.0"
 rust-ini = "0.21.1"
+signal-hook = "0.3.18"
 thiserror = "2.0.12"
