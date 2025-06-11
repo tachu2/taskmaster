@@ -27,4 +27,6 @@ pub enum ConfigParseError {
     FileNotFound,
     #[error("cannot read a file: {0}")]
     PermissionDenied(String),
+    #[error("unexpected value: {0}")]
+    UnexpectedValue(String),
 }

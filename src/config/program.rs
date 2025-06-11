@@ -65,14 +65,6 @@ impl Program {
             processnames: processnames,
         }
     }
-
-    pub fn add_command(&mut self, command: String) {
-        self.command.push_back(command);
-    }
-
-    pub fn add_processname(&mut self, processname: String) {
-        self.processnames.insert(processname);
-    }
 }
 
 pub enum ProgramSection {

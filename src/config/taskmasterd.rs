@@ -6,6 +6,15 @@ pub struct Taskmasterd {
     pub(in crate::config) loglevel: LogLevel,
 }
 
+impl Taskmasterd {
+    pub fn new() -> Self {
+        Taskmasterd {
+            logfile: String::new(),
+            loglevel: LogLevel::Info,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TaskmasterdSection {
     Logfile,

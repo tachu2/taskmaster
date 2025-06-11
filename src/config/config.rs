@@ -1,16 +1,19 @@
 use std::collections::HashMap;
 
+use crate::{config::config, config::taskmasterd::Taskmasterd};
 use crate::{config::program::Program, errors::ConfigParseError};
 
 #[derive(Debug)]
 pub struct Config {
     programs: HashMap<String, Program>,
+    taskmasterd: Taskmasterd,
 }
 
 impl Config {
     pub fn new() -> Self {
         Config {
             programs: HashMap::new(),
+            taskmasterd: Taskmasterd::new(),
         }
     }
 

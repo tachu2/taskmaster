@@ -10,6 +10,19 @@ pub enum LogLevel {
     CRITICAL,
 }
 
+impl LogLevel {
+    pub fn from_str(s: &str) -> Option<Self> {
+        match s.to_uppercase().as_str() {
+            logger::DEBUG => Some(LogLevel::DEBUG),
+            logger::INFO => Some(LogLevel::INFO),
+            logger::WARN => Some(LogLevel::WARN),
+            logger::ERROR => Some(LogLevel::ERROR),
+            logger::CRITICAL => Some(LogLevel::CRITICAL),
+            _ => None,
+        }
+    }
+}
+
 pub struct Logger {
     level: LogLevel,
 }
@@ -65,4 +78,12 @@ lazy_static! {
 ///INFO: never panic as long as it runs on single thread or does not panic when locking
 pub fn get_logger() -> std::sync::MutexGuard<'static, Logger> {
     LOGGER.lock().expect("Failed to lock LOGGER")
+}
+
+mod logger {
+    pub const DEBUG: &str = "DEBUG";
+    pub const INFO: &str = "INFO";
+    pub const WARN: &str = "WARN";
+    pub const ERROR: &str = "ERROR";
+    pub const CRITICAL: &str = "CRITICAL";
 }
