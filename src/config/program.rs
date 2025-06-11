@@ -1,3 +1,4 @@
+use signal_hook::consts::signal::SIGTERM;
 use std::collections::{HashSet, LinkedList};
 
 #[derive(Debug)]
@@ -53,8 +54,8 @@ impl Program {
             autorestart: autorestart.unwrap_or(program::AutoRestart::Unexpected),
             exitcodes: exitcodes.unwrap_or(LinkedList::from([0])),
             startsecs: startsecs.unwrap_or(1),
-            startretries: startretries.unwrap_or(1),
-            stopsignal: stopsignal.unwrap_or(1),
+            startretries: startretries.unwrap_or(3),
+            stopsignal: stopsignal.unwrap_or(SIGTERM),
             stopwaitsecs: stopwaitsecs.unwrap_or(10),
             stdout_logfile: stdout_logfile,
             stderr_logfile: stderr_logfile,
