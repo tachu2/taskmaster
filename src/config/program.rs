@@ -14,9 +14,9 @@ pub struct Program {
     pub(in crate::config) stopwaitsecs: u32, // seconds to wait for the program to stop
     pub(in crate::config) stdout_logfile: String,
     pub(in crate::config) stderr_logfile: String,
-    pub(in crate::config) enviroment: LinkedList<String>, // environment variables to set for the program
-    pub(in crate::config) directory: String,              // working directory for the program
-    pub(in crate::config) umask: program::Umask,          // working directory for the program
+    pub(in crate::config) enviroment: Option<LinkedList<String>>, // environment variables to set for the program
+    pub(in crate::config) directory: Option<String>, // working directory for the program
+    pub(in crate::config) umask: Option<u16>,        // working directory for the program
     pub(in crate::config) processnames: HashSet<String>,
 }
 
@@ -31,16 +31,37 @@ impl Program {
         startsecs: Option<u8>,
         startretries: Option<u8>,
         stopsignal: Option<i32>,
-        stdout_logfile: String,
-        stderr_logfile: String,
+        stopwaitsecs: Option<u32>,
+        stdout_logfile: Option<String>,
+        stderr_logfile: Option<String>,
         environment: Option<LinkedList<String>>,
-        durectory: Option<String>,
-        umask: Option<program::Umask>,
+        directory: Option<String>,
+        umask: Option<u16>,
     ) -> Self {
+        let numprocs = numprocs.unwrap_or(1);
+        let processnames = (1..numprocs)
+            .map(|i| format!("{}{}", programname, i))
+            .collect();
+        let stdout_logfile = stdout_logfile.unwrap_or_else(|| format!("{}.log", programname));
+        let stderr_logfile = stderr_logfile.unwrap_or_else(|| format!("{}_err.log", programname));
+
         Program {
             programname,
-            command: LinkedList::new(),
-            processnames: HashSet::new(),
+            command: command,
+            numprocs: numprocs,
+            autostart: autostart.unwrap_or(true),
+            autorestart: autorestart.unwrap_or(program::AutoRestart::Unexpected),
+            exitcodes: exitcodes.unwrap_or(LinkedList::from([0])),
+            startsecs: startsecs.unwrap_or(1),
+            startretries: startretries.unwrap_or(1),
+            stopsignal: stopsignal.unwrap_or(1),
+            stopwaitsecs: stopwaitsecs.unwrap_or(10),
+            stdout_logfile: stdout_logfile,
+            stderr_logfile: stderr_logfile,
+            enviroment: environment,
+            directory: directory,
+            umask: umask,
+            processnames: processnames,
         }
     }
 
@@ -132,11 +153,5 @@ mod program {
         Unexpected,
         True,
         False,
-    }
-
-    #[derive(Debug, PartialEq, Eq)]
-    pub enum Umask {
-        Taskmaster, // use taskmaster's umask
-        Umask(u16), // use a specific umask
     }
 }
