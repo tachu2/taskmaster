@@ -88,21 +88,24 @@ impl Adapter {
         if config.programs.contains_key(&program_name) {
             return Err(ConfigParseError::DuplicatedValue(program_name));
         }
-        let mut program = Program::builder();
-        program.programname = program_name;
+        let mut builder = Program::builder();
+        builder = builder.programname(program_name);
         for (key, value) in prop.iter() {
             let section_value = ProgramSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
             match section_value {
                 ProgramSection::Command => {
-                    program.command = ProgramParser::parse_command(value)?;
+                    builder.command(ProgramParser::parse_command(value)?);
                 }
                 _ => {
                     // return Err(ConfigParseError::UnexpectedValue(key.to_string()));
                 }
             }
         }
-        config.programs.insert(program.programname.clone(), program);
+        let program = builder
+            .build()
+            .map_err(|_| ConfigParseError::MissingCommand(program_name.clone()))?;
+        config.programs.insert(program_name, program);
         Ok(())
     }
 }

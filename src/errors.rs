@@ -31,4 +31,14 @@ pub enum ConfigParseError {
     UnexpectedValue(String),
     #[error("duplicated value: {0}")]
     DuplicatedValue(String),
+    #[error("command is required in program section: {0}")]
+    MissingCommand(String),
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum ProgramBuilderError {
+    #[error("programname is required.")]
+    MissingProgramName,
+    #[error("command is required in program section.")]
+    MissingCommand,
 }

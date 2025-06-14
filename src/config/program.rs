@@ -1,6 +1,8 @@
 use signal_hook::consts::signal::SIGTERM;
 use std::collections::{HashSet, LinkedList};
 
+use crate::errors::ProgramBuilderError;
+
 #[derive(Debug)]
 pub struct Program {
     pub(in crate::config) programname: String, // unique identifier for the program
@@ -66,24 +68,151 @@ impl Program {
         }
     }
 
-    pub fn builder() -> Self {
-        Self::new(
-            String::new(),
-            LinkedList::new(),
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-            None,
-        )
+    pub fn builder() -> ProgramBuilder {
+        ProgramBuilder::new()
+    }
+}
+
+#[derive(Debug)]
+pub struct ProgramBuilder {
+    programname: Option<String>,
+    command: Option<LinkedList<String>>,
+    numprocs: Option<u8>,
+    autostart: Option<bool>,
+    autorestart: Option<program::AutoRestart>,
+    exitcodes: Option<LinkedList<i32>>,
+    startsecs: Option<u8>,
+    startretries: Option<u8>,
+    stopsignal: Option<i32>,
+    stopwaitsecs: Option<u32>,
+    stdout_logfile: Option<String>,
+    stderr_logfile: Option<String>,
+    environment: Option<LinkedList<String>>,
+    directory: Option<String>,
+    umask: Option<u16>,
+}
+
+impl ProgramBuilder {
+    pub fn new() -> Self {
+        ProgramBuilder {
+            programname: None,
+            command: None,
+            numprocs: None,
+            autostart: None,
+            autorestart: None,
+            exitcodes: None,
+            startsecs: None,
+            startretries: None,
+            stopsignal: None,
+            stopwaitsecs: None,
+            stdout_logfile: None,
+            stderr_logfile: None,
+            environment: None,
+            directory: None,
+            umask: None,
+        }
+    }
+
+    pub fn programname(mut self, programname: String) -> Self {
+        self.programname = Some(programname);
+        self
+    }
+
+    pub fn command(mut self, command: LinkedList<String>) -> Self {
+        self.command = Some(command);
+        self
+    }
+
+    pub fn numprocs(mut self, numprocs: u8) -> Self {
+        self.numprocs = Some(numprocs);
+        self
+    }
+
+    pub fn autostart(mut self, autostart: bool) -> Self {
+        self.autostart = Some(autostart);
+        self
+    }
+
+    pub fn autorestart(mut self, autorestart: program::AutoRestart) -> Self {
+        self.autorestart = Some(autorestart);
+        self
+    }
+
+    pub fn exitcodes(mut self, exitcodes: LinkedList<i32>) -> Self {
+        self.exitcodes = Some(exitcodes);
+        self
+    }
+
+    pub fn startsecs(mut self, startsecs: u8) -> Self {
+        self.startsecs = Some(startsecs);
+        self
+    }
+
+    pub fn startretries(mut self, startretries: u8) -> Self {
+        self.startretries = Some(startretries);
+        self
+    }
+
+    pub fn stopsignal(mut self, stopsignal: i32) -> Self {
+        self.stopsignal = Some(stopsignal);
+        self
+    }
+
+    pub fn stopwaitsecs(mut self, stopwaitsecs: u32) -> Self {
+        self.stopwaitsecs = Some(stopwaitsecs);
+        self
+    }
+
+    pub fn stdout_logfile(mut self, stdout_logfile: String) -> Self {
+        self.stdout_logfile = Some(stdout_logfile);
+        self
+    }
+
+    pub fn stderr_logfile(mut self, stderr_logfile: String) -> Self {
+        self.stderr_logfile = Some(stderr_logfile);
+        self
+    }
+
+    pub fn environment(mut self, environment: LinkedList<String>) -> Self {
+        self.environment = Some(environment);
+        self
+    }
+
+    pub fn directory(mut self, directory: String) -> Self {
+        self.directory = Some(directory);
+        self
+    }
+
+    pub fn umask(mut self, umask: u16) -> Self {
+        self.umask = Some(umask);
+        self
+    }
+
+    pub fn build(self) -> Result<Program, ProgramBuilderError> {
+        let programname = self
+            .programname
+            .ok_or(crate::errors::ProgramBuilderError::MissingProgramName)?;
+        let command = self
+            .command
+            .ok_or(crate::errors::ProgramBuilderError::MissingCommand)?;
+
+        Ok(Program::new(
+            programname,
+            command,
+            self.numprocs,
+            self.autostart,
+            self.autorestart,
+            self.exitcodes,
+            self.startsecs,
+            self.startretries,
+            self.stopsignal,
+            self.stopwaitsecs,
+            self.stdout_logfile,
+            self.stderr_logfile,
+            self.environment,
+            self.directory,
+            self.umask,
+        ))
     }
 }
 
@@ -162,7 +291,7 @@ pub mod program {
     pub const DIRECTORY: &str = "directory";
     pub const UMASK: &str = "umask";
 
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Copy, Clone)]
     pub enum AutoRestart {
         Unexpected,
         True,
