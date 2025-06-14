@@ -125,7 +125,8 @@ impl ProgramSection {
     }
 }
 
-mod program {
+pub mod program {
+    pub const PROGRAM: &str = "program";
     pub const COMMAND: &str = "command";
     pub const NUMPROCS: &str = "numprocs";
     pub const AUTOSTART: &str = "autostart";

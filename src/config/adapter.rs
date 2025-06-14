@@ -1,9 +1,11 @@
 pub struct Adapter;
 
+use crate::config::program::program;
 use crate::config::taskmasterd::{taskmasterd, TaskmasterdSection};
 use crate::{config::config::Config, errors::ConfigParseError};
 use ini::{Ini, Properties};
 
+use super::program::ProgramSection;
 use super::{
     logger::{LogLevel, Logger},
     taskmasterd::Taskmasterd,
@@ -32,11 +34,10 @@ impl Adapter {
                 Some(taskmasterd::TASKMASTERD) => {
                     Self::parse_taskmasterd(config, prop)?;
                 }
-                Some(&_) => {
-                    return Err(ConfigParseError::UnexpectedValue(
-                        sec.unwrap_or_default().to_string(),
-                    ));
+                Some(s) if s.starts_with(program::PROGRAM) => {
+                    Self::parse_program(config, s, prop)?;
                 }
+                Some(_) => {}
                 None => {
                     // return Err(ConfigParseError::UnexpectedValue(
                     //     sec.unwrap_or_default().to_string(),
@@ -49,9 +50,9 @@ impl Adapter {
 
     fn parse_taskmasterd(config: &mut Config, prop: &Properties) -> Result<(), ConfigParseError> {
         for (key, value) in prop.iter() {
-            let section = TaskmasterdSection::from_str(key)
+            let section_value = TaskmasterdSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
-            match section {
+            match section_value {
                 TaskmasterdSection::Logfile => {
                     config.taskmasterd.logfile = value.to_string();
                 }
@@ -65,6 +66,32 @@ impl Adapter {
                         LogLevel::ERROR => config.taskmasterd.loglevel = LogLevel::ERROR,
                         LogLevel::CRITICAL => config.taskmasterd.loglevel = LogLevel::CRITICAL,
                     }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn parse_program(
+        config: &mut Config,
+        sec: &str,
+        prop: &Properties,
+    ) -> Result<(), ConfigParseError> {
+        let parts: Vec<&str> = sec.split(':').collect();
+        if parts.len() != 2 {
+            Err(ConfigParseError::UnexpectedValue(sec.to_string()))?;
+        }
+        let program_name = parts[1].to_string();
+        if config.programs.contains_key(&program_name) {
+            Err(ConfigParseError::DuplicatedValue(program_name))?;
+        }
+        for (key, value) in prop.iter() {
+            let section_value = ProgramSection::from_str(key)
+                .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
+            match section_value {
+                ProgramSection::Command => {}
+                _ => {
+                    // return Err(ConfigParseError::UnexpectedValue(key.to_string()));
                 }
             }
         }

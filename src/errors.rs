@@ -29,4 +29,6 @@ pub enum ConfigParseError {
     PermissionDenied(String),
     #[error("unexpected value: {0}")]
     UnexpectedValue(String),
+    #[error("duplicated value: {0}")]
+    DuplicatedValue(String),
 }

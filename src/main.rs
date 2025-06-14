@@ -25,7 +25,9 @@ fn main() {
         None
     };
     let mut config = config::config::Config::new();
-    Adapter::parse_config(&mut config, file_path);
+    if let Err(e) = Adapter::parse_config(&mut config, file_path) {
+        eprintln!("Error parsing config: {}", e);
+    }
     let logger = get_logger();
     logger.info("Starting the application...");
     match commandline::CommandLine::readline() {
