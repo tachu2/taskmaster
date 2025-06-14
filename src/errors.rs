@@ -33,6 +33,8 @@ pub enum ConfigParseError {
     DuplicatedValue(String),
     #[error("command is required in program section: {0}")]
     MissingCommand(String),
+    #[error("error: {0}")]
+    Critical(String),
 }
 
 #[derive(Debug, thiserror::Error)]

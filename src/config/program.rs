@@ -113,77 +113,77 @@ impl ProgramBuilder {
         }
     }
 
-    pub fn programname(mut self, programname: String) -> Self {
+    pub fn programname(self: &mut Self, programname: String) -> &mut Self {
         self.programname = Some(programname);
         self
     }
 
-    pub fn command(mut self, command: LinkedList<String>) -> Self {
+    pub fn command(self: &mut Self, command: LinkedList<String>) -> &mut Self {
         self.command = Some(command);
         self
     }
 
-    pub fn numprocs(mut self, numprocs: u8) -> Self {
+    pub fn numprocs(self: &mut Self, numprocs: u8) -> &mut Self {
         self.numprocs = Some(numprocs);
         self
     }
 
-    pub fn autostart(mut self, autostart: bool) -> Self {
+    pub fn autostart(self: &mut Self, autostart: bool) -> &mut Self {
         self.autostart = Some(autostart);
         self
     }
 
-    pub fn autorestart(mut self, autorestart: program::AutoRestart) -> Self {
+    pub fn autorestart(self: &mut Self, autorestart: program::AutoRestart) -> &mut Self {
         self.autorestart = Some(autorestart);
         self
     }
 
-    pub fn exitcodes(mut self, exitcodes: LinkedList<i32>) -> Self {
+    pub fn exitcodes(self: &mut Self, exitcodes: LinkedList<i32>) -> &mut Self {
         self.exitcodes = Some(exitcodes);
         self
     }
 
-    pub fn startsecs(mut self, startsecs: u8) -> Self {
+    pub fn startsecs(self: &mut Self, startsecs: u8) -> &mut Self {
         self.startsecs = Some(startsecs);
         self
     }
 
-    pub fn startretries(mut self, startretries: u8) -> Self {
+    pub fn startretries(self: &mut Self, startretries: u8) -> &mut Self {
         self.startretries = Some(startretries);
         self
     }
 
-    pub fn stopsignal(mut self, stopsignal: i32) -> Self {
+    pub fn stopsignal(self: &mut Self, stopsignal: i32) -> &mut Self {
         self.stopsignal = Some(stopsignal);
         self
     }
 
-    pub fn stopwaitsecs(mut self, stopwaitsecs: u32) -> Self {
+    pub fn stopwaitsecs(self: &mut Self, stopwaitsecs: u32) -> &mut Self {
         self.stopwaitsecs = Some(stopwaitsecs);
         self
     }
 
-    pub fn stdout_logfile(mut self, stdout_logfile: String) -> Self {
+    pub fn stdout_logfile(self: &mut Self, stdout_logfile: String) -> &mut Self {
         self.stdout_logfile = Some(stdout_logfile);
         self
     }
 
-    pub fn stderr_logfile(mut self, stderr_logfile: String) -> Self {
+    pub fn stderr_logfile(self: &mut Self, stderr_logfile: String) -> &mut Self {
         self.stderr_logfile = Some(stderr_logfile);
         self
     }
 
-    pub fn environment(mut self, environment: LinkedList<String>) -> Self {
+    pub fn environment(self: &mut Self, environment: LinkedList<String>) -> &mut Self {
         self.environment = Some(environment);
         self
     }
 
-    pub fn directory(mut self, directory: String) -> Self {
+    pub fn directory(self: &mut Self, directory: String) -> &mut Self {
         self.directory = Some(directory);
         self
     }
 
-    pub fn umask(mut self, umask: u16) -> Self {
+    pub fn umask(self: &mut Self, umask: u16) -> &mut Self {
         self.umask = Some(umask);
         self
     }

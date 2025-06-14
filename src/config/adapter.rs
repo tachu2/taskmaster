@@ -5,6 +5,7 @@ use crate::config::{
     parser::ProgramParser,
     taskmasterd::{taskmasterd, TaskmasterdSection},
 };
+use crate::errors::ProgramBuilderError;
 use crate::{config::config::Config, errors::ConfigParseError};
 use ini::{Ini, Properties};
 
@@ -89,7 +90,7 @@ impl Adapter {
             return Err(ConfigParseError::DuplicatedValue(program_name));
         }
         let mut builder = Program::builder();
-        builder = builder.programname(program_name);
+        builder.programname(program_name.clone());
         for (key, value) in prop.iter() {
             let section_value = ProgramSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
@@ -102,9 +103,14 @@ impl Adapter {
                 }
             }
         }
-        let program = builder
-            .build()
-            .map_err(|_| ConfigParseError::MissingCommand(program_name.clone()))?;
+        let program = builder.build().map_err(|e| match e {
+            ProgramBuilderError::MissingCommand => {
+                ConfigParseError::MissingCommand(program_name.clone())
+            }
+            ProgramBuilderError::MissingProgramName => {
+                ConfigParseError::Critical(ProgramBuilderError::MissingProgramName.to_string())
+            }
+        })?;
         config.programs.insert(program_name, program);
         Ok(())
     }
