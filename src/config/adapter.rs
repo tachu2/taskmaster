@@ -82,27 +82,27 @@ impl Adapter {
     ) -> Result<(), ConfigParseError> {
         let parts: Vec<&str> = sec.split(':').collect();
         if parts.len() != 2 {
-            Err(ConfigParseError::UnexpectedValue(sec.to_string()))?;
+            return Err(ConfigParseError::UnexpectedValue(sec.to_string()));
         }
         let program_name = parts[1].to_string();
         if config.programs.contains_key(&program_name) {
-            Err(ConfigParseError::DuplicatedValue(program_name))?;
+            return Err(ConfigParseError::DuplicatedValue(program_name));
         }
-        // config
-        //     .programs
-        //     .insert(program_name, Program::new(program_name));
+        let mut program = Program::builder();
+        program.programname = program_name;
         for (key, value) in prop.iter() {
             let section_value = ProgramSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
             match section_value {
                 ProgramSection::Command => {
-                    let command = ProgramParser::parse_command(value)?;
+                    program.command = ProgramParser::parse_command(value)?;
                 }
                 _ => {
                     // return Err(ConfigParseError::UnexpectedValue(key.to_string()));
                 }
             }
         }
+        config.programs.insert(program.programname.clone(), program);
         Ok(())
     }
 }

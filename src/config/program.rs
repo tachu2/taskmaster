@@ -65,6 +65,26 @@ impl Program {
             processnames: processnames,
         }
     }
+
+    pub fn builder() -> Self {
+        Self::new(
+            String::new(),
+            LinkedList::new(),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+        )
+    }
 }
 
 pub enum ProgramSection {
