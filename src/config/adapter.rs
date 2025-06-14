@@ -1,11 +1,14 @@
 pub struct Adapter;
 
 use crate::config::program::program;
-use crate::config::taskmasterd::{taskmasterd, TaskmasterdSection};
+use crate::config::{
+    parser::ProgramParser,
+    taskmasterd::{taskmasterd, TaskmasterdSection},
+};
 use crate::{config::config::Config, errors::ConfigParseError};
 use ini::{Ini, Properties};
 
-use super::program::ProgramSection;
+use super::program::{Program, ProgramSection};
 use super::{
     logger::{LogLevel, Logger},
     taskmasterd::Taskmasterd,
@@ -85,11 +88,16 @@ impl Adapter {
         if config.programs.contains_key(&program_name) {
             Err(ConfigParseError::DuplicatedValue(program_name))?;
         }
+        // config
+        //     .programs
+        //     .insert(program_name, Program::new(program_name));
         for (key, value) in prop.iter() {
             let section_value = ProgramSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
             match section_value {
-                ProgramSection::Command => {}
+                ProgramSection::Command => {
+                    let command = ProgramParser::parse_command(value)?;
+                }
                 _ => {
                     // return Err(ConfigParseError::UnexpectedValue(key.to_string()));
                 }
