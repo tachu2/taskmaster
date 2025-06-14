@@ -10,7 +10,7 @@ impl Taskmasterd {
     pub fn new() -> Self {
         Taskmasterd {
             logfile: String::new(),
-            loglevel: LogLevel::Info,
+            loglevel: LogLevel::INFO,
         }
     }
 }
@@ -38,7 +38,8 @@ impl TaskmasterdSection {
     }
 }
 
-mod taskmasterd {
+pub mod taskmasterd {
+    pub const TASKMASTERD: &str = "taskmasterd";
     pub const LOGFILE: &str = "logfile";
     pub const LOGLEVEL: &str = "loglevel";
 }

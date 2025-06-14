@@ -5,8 +5,8 @@ use crate::{config::program::Program, errors::ConfigParseError};
 
 #[derive(Debug)]
 pub struct Config {
-    programs: HashMap<String, Program>,
-    taskmasterd: Taskmasterd,
+    pub(in crate::config) programs: HashMap<String, Program>,
+    pub(in crate::config) taskmasterd: Taskmasterd,
 }
 
 impl Config {
@@ -34,6 +34,4 @@ impl Config {
     }
 }
 
-mod config {
-    pub const DEFAULT_CONFIG_PATHS: [&str; 1] = ["./taskmaster.conf"];
-}
+pub const DEFAULT_CONFIG_PATHS: [&str; 1] = ["./taskmaster.conf"];

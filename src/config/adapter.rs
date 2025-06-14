@@ -1,11 +1,12 @@
 pub struct Adapter;
 
+use crate::config::taskmasterd::{taskmasterd, TaskmasterdSection};
 use crate::{config::config::Config, errors::ConfigParseError};
 use ini::{Ini, Properties};
 
 use super::{
     logger::{LogLevel, Logger},
-    taskmasterd::{Taskmasterd, TaskmasterdSection},
+    taskmasterd::Taskmasterd,
 };
 
 impl Adapter {
@@ -27,11 +28,26 @@ impl Adapter {
                 // }
                 println!("{}:{}", key, value);
             }
+            match sec {
+                Some(taskmasterd::TASKMASTERD) => {
+                    Self::parse_taskmasterd(config, prop)?;
+                }
+                Some(&_) => {
+                    return Err(ConfigParseError::UnexpectedValue(
+                        sec.unwrap_or_default().to_string(),
+                    ));
+                }
+                None => {
+                    // return Err(ConfigParseError::UnexpectedValue(
+                    //     sec.unwrap_or_default().to_string(),
+                    // ))
+                }
+            }
         }
         Ok(())
     }
 
-    fn parse_taskmasterd(config: &mut Config, prop: Properties) -> Result<(), ConfigParseError> {
+    fn parse_taskmasterd(config: &mut Config, prop: &Properties) -> Result<(), ConfigParseError> {
         for (key, value) in prop.iter() {
             let section = TaskmasterdSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
@@ -52,7 +68,6 @@ impl Adapter {
                 }
             }
         }
-
         Ok(())
     }
 }
