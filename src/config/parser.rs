@@ -529,6 +529,27 @@ mod tests {
             let result = ProgramParser::parse_environment(environment).unwrap();
             assert_eq!(result.len(), 0);
         }
+
+        #[test]
+        fn test_parse_environment_unclosed_quotes() {
+            let environment = "key1=\"value1";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_unclosed_quotes2() {
+            let environment = "key1=value1\"";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_invalid_format() {
+            let environment = "key1value1";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
     }
 
     mod parse_directory_tests {
