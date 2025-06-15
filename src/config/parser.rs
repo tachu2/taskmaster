@@ -135,13 +135,14 @@ impl ProgramParser {
                             list.push_back(format!("{}={}", cur_key, cur_value));
                             cur_state = State::End;
                         }
-                        c => cur_key.push(c),
+                        c => cur_value.push(c),
                     }
                     i += 1;
                 }
                 State::QuoteedValue => {
                     if c == delimiter {
                         delimiter = '\0';
+                        cur_state = State::Value;
                     } else {
                         cur_value.push(c);
                     }
