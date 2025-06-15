@@ -131,7 +131,7 @@ impl ProgramParser {
                             cur_state = State::QuoteedValue;
                             delimiter = c;
                         }
-                        c if c.is_whitespace() || c == ',' => {
+                        c if c == ',' => {
                             list.push_back(format!("{}={}", cur_key, cur_value));
                             cur_state = State::End;
                         }
@@ -156,10 +156,12 @@ impl ProgramParser {
                 }
             }
         }
-        if !cur_value.is_empty() {
+        if cur_state == State::Value {
             list.push_back(format!("{}={}", cur_key, cur_value));
             cur_state = State::End;
         }
+        println!("Parsed environment: {:?}", list);
+        println!("Current state: {:?}", cur_state);
         if cur_state != State::Start && cur_state != State::End {
             Err(ConfigParseError::UnexpectedValue(environment.to_string()))?;
         }
@@ -478,6 +480,16 @@ mod tests {
         use super::*;
 
         #[test]
+        fn test_parse_environment_empty_values() {
+            let environment = "key1=,key2= ,key3=";
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 3);
+            assert_eq!(result.iter().nth(0).unwrap(), "key1=");
+            assert_eq!(result.iter().nth(1).unwrap(), "key2= ");
+            assert_eq!(result.iter().nth(2).unwrap(), "key3=");
+        }
+
+        #[test]
         fn test_parse_environment_without_double_quotes() {
             let environment = "key1=value1,key2=value2";
             let result = ProgramParser::parse_environment(environment).unwrap();
@@ -493,6 +505,15 @@ mod tests {
             assert_eq!(result.len(), 2);
             assert_eq!(result.iter().nth(0).unwrap(), "key1=value1, test");
             assert_eq!(result.iter().nth(1).unwrap(), "key2=value2");
+        }
+
+        #[test]
+        fn test_parse_environment_with_quotes() {
+            let environment = "key1=\"value1'',; test'\",key2='value2, \"'";
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 2);
+            assert_eq!(result.iter().nth(0).unwrap(), "key1=value1'',; test'");
+            assert_eq!(result.iter().nth(1).unwrap(), "key2=value2, \"");
         }
 
         #[test]
