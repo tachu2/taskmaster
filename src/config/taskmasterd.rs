@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::logger::LogLevel;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
