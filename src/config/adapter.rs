@@ -65,14 +65,8 @@ impl Adapter {
                 TaskmasterdSection::Loglevel => {
                     let value = LogLevel::from_str(value)
                         .ok_or_else(|| ConfigParseError::UnexpectedValue(value.to_string()))?;
-                    logger.debug(&format!("loglevel: {}", value));
-                    match value {
-                        LogLevel::DEBUG => config.taskmasterd.loglevel = LogLevel::DEBUG,
-                        LogLevel::INFO => config.taskmasterd.loglevel = LogLevel::INFO,
-                        LogLevel::WARN => config.taskmasterd.loglevel = LogLevel::WARN,
-                        LogLevel::ERROR => config.taskmasterd.loglevel = LogLevel::ERROR,
-                        LogLevel::CRITICAL => config.taskmasterd.loglevel = LogLevel::CRITICAL,
-                    }
+                    logger.debug(&format!("loglevel: {:?}", value));
+                    config.taskmasterd.loglevel = value;
                 }
             }
         }

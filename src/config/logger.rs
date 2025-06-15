@@ -1,8 +1,7 @@
-use core::fmt;
 use lazy_static::lazy_static;
-use std::{fmt::Display, sync::Mutex};
+use std::sync::Mutex;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Display)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LogLevel {
     DEBUG,
     INFO,
