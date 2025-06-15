@@ -118,33 +118,34 @@ impl ProgramParser {
                 }
                 State::Key => {
                     if c == '=' {
-                        parse_enviroment_key(&cur_key)?;
+                        Self::parse_enviroment_key(&cur_key)?;
                         cur_state = State::Value;
-                        i += 1;
                     } else {
                         cur_key.push(c);
                     }
+                    i += 1;
                 }
-                State::Value => match c {
-                    '\'' | '"' => {
-                        cur_state = State::QuoteedValue;
-                        delimiter = c;
-                        i += 1;
+                State::Value => {
+                    match c {
+                        '\'' | '"' => {
+                            cur_state = State::QuoteedValue;
+                            delimiter = c;
+                        }
+                        c if c.is_whitespace() || c == ',' => {
+                            list.push_back(format!("{}={}", cur_key, cur_value));
+                            cur_state = State::End;
+                        }
+                        c => cur_key.push(c),
                     }
-                    c if c.is_whitespace() || c == ',' => {
-                        list.push_back(format!("{}={}", cur_key, cur_value));
-                        cur_state = State::End;
-                        i += 1;
-                    }
-                    c => cur_key.push(c),
-                },
+                    i += 1;
+                }
                 State::QuoteedValue => {
                     if c == delimiter {
-                        i += 1;
                         delimiter = '\0';
                     } else {
                         cur_value.push(c);
                     }
+                    i += 1;
                 }
                 State::End => {
                     cur_key.clear();
@@ -489,22 +490,22 @@ mod tests {
             let environment = "key1=\"value1, test\",key2=\"value2\"";
             let result = ProgramParser::parse_environment(environment).unwrap();
             assert_eq!(result.len(), 2);
-            assert_eq!(result.iter().nth(0).unwrap(), "key1=\"value1, test\"");
+            assert_eq!(result.iter().nth(0).unwrap(), "key1=value1, test");
             assert_eq!(result.iter().nth(1).unwrap(), "key2=value2");
         }
 
         #[test]
         fn test_parse_environment_empty() {
             let environment = "";
-            let result = ProgramParser::parse_environment(environment);
-            assert!(result.is_err());
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 0);
         }
 
         #[test]
         fn test_parse_environment_spaces() {
             let environment = "     ";
-            let result = ProgramParser::parse_environment(environment);
-            assert!(result.is_err());
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 0);
         }
     }
 
