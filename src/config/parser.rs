@@ -172,6 +172,14 @@ impl ProgramParser {
         if key.is_empty() {
             return Err(ConfigParseError::UnexpectedValue(key.to_string()));
         }
+        if !key.chars().all(|c| c.is_ascii_alphanumeric()) {
+            return Err(ConfigParseError::UnexpectedValue(key.to_string()));
+        }
+        if key.parse::<i32>().is_ok() {
+            return Err(ConfigParseError::UnexpectedValue(
+                key.to_string() + ": not a valid identifer",
+            ));
+        }
         Ok(())
     }
 
@@ -547,6 +555,57 @@ mod tests {
         #[test]
         fn test_parse_environment_invalid_format() {
             let environment = "key1value1";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_empty_key_value() {
+            let environment = "=";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_invalid_key() {
+            let environment = "1=value";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_missing_equals() {
+            let environment = "keyvalue";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_multiple_equals_no_value() {
+            let environment = "key===";
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 1);
+            assert_eq!(result.iter().nth(0).unwrap(), "key===");
+        }
+
+        #[test]
+        fn test_parse_environment_starting_comma() {
+            let environment = ",key=value";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_ending_comma() {
+            let environment = "key=value,";
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 1);
+            assert_eq!(result.iter().nth(0).unwrap(), "key=value");
+        }
+
+        #[test]
+        fn test_parse_environment_consecutive_commas() {
+            let environment = "key1=value1,,key2=value2";
             let result = ProgramParser::parse_environment(environment);
             assert!(result.is_err());
         }
