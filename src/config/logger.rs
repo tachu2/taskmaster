@@ -1,3 +1,4 @@
+use chrono::Local;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 
@@ -8,6 +9,18 @@ pub enum LogLevel {
     WARN,
     ERROR,
     CRITICAL,
+}
+
+impl std::fmt::Display for LogLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LogLevel::DEBUG => write!(f, "DEBUG"),
+            LogLevel::INFO => write!(f, "INFO"),
+            LogLevel::WARN => write!(f, "WARN"),
+            LogLevel::ERROR => write!(f, "ERROR"),
+            LogLevel::CRITICAL => write!(f, "CRITICAL"),
+        }
+    }
 }
 
 impl LogLevel {
@@ -28,39 +41,45 @@ pub struct Logger {
 }
 
 impl Logger {
+    fn log(&self, level: LogLevel, message: &str) {
+        let now = Local::now();
+        let timestamp = now.format("%Y/%m/%d %H:%M:%S").to_string();
+        println!("[{}] [{}] {}", timestamp, level, message);
+    }
+
     pub fn debug(&self, message: &str) {
         if self.level > LogLevel::DEBUG {
             return;
         }
-        println!("[{:?}] {}", LogLevel::DEBUG, message);
+        self.log(LogLevel::DEBUG, message);
     }
 
     pub fn info(&self, message: &str) {
         if self.level > LogLevel::INFO {
             return;
         }
-        println!("[{:?}] {}", LogLevel::INFO, message);
+        self.log(LogLevel::INFO, message);
     }
 
     pub fn warn(&self, message: &str) {
         if self.level > LogLevel::WARN {
             return;
         }
-        println!("[{:?}] {}", LogLevel::WARN, message);
+        self.log(LogLevel::WARN, message);
     }
 
     pub fn error(&self, message: &str) {
         if self.level > LogLevel::ERROR {
             return;
         }
-        println!("[{:?}] {}", LogLevel::ERROR, message);
+        self.log(LogLevel::ERROR, message);
     }
 
     pub fn critical(&self, message: &str) {
         if self.level > LogLevel::CRITICAL {
             return;
         }
-        println!("[{:?}] {}", LogLevel::CRITICAL, message);
+        self.log(LogLevel::CRITICAL, message);
     }
 
     pub fn change_level(&mut self, level: LogLevel) {
@@ -70,7 +89,7 @@ impl Logger {
 
 lazy_static! {
     static ref LOGGER: Mutex<Logger> = Mutex::new(Logger {
-        level: LogLevel::WARN
+        level: LogLevel::DEBUG
     });
 }
 
