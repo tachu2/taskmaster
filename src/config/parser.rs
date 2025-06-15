@@ -222,4 +222,232 @@ mod tests {
             assert!(result.is_err());
         }
     }
+
+    mod parse_autostart_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_autostart_valid_true() {
+            let autostart = "true";
+            let result = ProgramParser::parse_autostart(autostart).unwrap();
+            assert_eq!(result, true);
+        }
+
+        #[test]
+        fn test_parse_autostart_valid_false() {
+            let autostart = "false";
+            let result = ProgramParser::parse_autostart(autostart).unwrap();
+            assert_eq!(result, false);
+        }
+
+        #[test]
+        fn test_parse_autostart_invalid() {
+            let autostart = "abc";
+            let result = ProgramParser::parse_autostart(autostart);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_autorestart_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_autorestart_valid_true() {
+            let autorestart = "true";
+            let result = ProgramParser::parse_autorestart(autorestart).unwrap();
+            assert_eq!(result, AutoRestart::True);
+        }
+
+        #[test]
+        fn test_parse_autorestart_valid_false() {
+            let autorestart = "false";
+            let result = ProgramParser::parse_autorestart(autorestart).unwrap();
+            assert_eq!(result, AutoRestart::False);
+        }
+
+        #[test]
+        fn test_parse_autorestart_valid_unexpected() {
+            let autorestart = "unexpected";
+            let result = ProgramParser::parse_autorestart(autorestart).unwrap();
+            assert_eq!(result, AutoRestart::Unexpected);
+        }
+
+        #[test]
+        fn test_parse_autorestart_invalid() {
+            let autorestart = "abc";
+            let result = ProgramParser::parse_autorestart(autorestart);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_exitcodes_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_exitcodes_valid() {
+            let exitcodes = "1,2,3";
+            let result = ProgramParser::parse_exitcodes(exitcodes).unwrap();
+            assert_eq!(result.len(), 3);
+            assert_eq!(result.iter().nth(0).unwrap(), &1);
+            assert_eq!(result.iter().nth(1).unwrap(), &2);
+            assert_eq!(result.iter().nth(2).unwrap(), &3);
+        }
+
+        #[test]
+        fn test_parse_exitcodes_invalid() {
+            let exitcodes = "1,a,3";
+            let result = ProgramParser::parse_exitcodes(exitcodes);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_exitcodes_empty() {
+            let exitcodes = "";
+            let result = ProgramParser::parse_exitcodes(exitcodes);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_startsecs_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_startsecs_valid() {
+            let startsecs = "5";
+            let result = ProgramParser::parse_startsecs(startsecs).unwrap();
+            assert_eq!(result, 5);
+        }
+
+        #[test]
+        fn test_parse_startsecs_invalid() {
+            let startsecs = "abc";
+            let result = ProgramParser::parse_startsecs(startsecs);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_startretries_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_startretries_valid() {
+            let startretries = "5";
+            let result = ProgramParser::parse_startretries(startretries).unwrap();
+            assert_eq!(result, 5);
+        }
+
+        #[test]
+        fn test_parse_startretries_invalid() {
+            let startretries = "abc";
+            let result = ProgramParser::parse_startretries(startretries);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_stopsignal_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_stopsignal_valid() {
+            let stopsignal = "15";
+            let result = ProgramParser::parse_stopsignal(stopsignal).unwrap();
+            assert_eq!(result, 15);
+        }
+
+        #[test]
+        fn test_parse_stopsignal_invalid() {
+            let stopsignal = "abc";
+            let result = ProgramParser::parse_stopsignal(stopsignal);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_stopwaitsecs_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_stopwaitsecs_valid() {
+            let stopwaitsecs = "10";
+            let result = ProgramParser::parse_stopwaitsecs(stopwaitsecs).unwrap();
+            assert_eq!(result, 10);
+        }
+
+        #[test]
+        fn test_parse_stopwaitsecs_invalid() {
+            let stopwaitsecs = "abc";
+            let result = ProgramParser::parse_stopwaitsecs(stopwaitsecs);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_stdout_logfile_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_stdout_logfile_valid() {
+            let stdout_logfile = "/var/log/stdout.log";
+            let result = ProgramParser::parse_stdout_logfile(stdout_logfile).unwrap();
+            assert_eq!(result, "/var/log/stdout.log");
+        }
+    }
+
+    mod parse_stderr_logfile_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_stderr_logfile_valid() {
+            let stderr_logfile = "/var/log/stderr.log";
+            let result = ProgramParser::parse_stderr_logfile(stderr_logfile).unwrap();
+            assert_eq!(result, "/var/log/stderr.log");
+        }
+    }
+
+    mod parse_environment_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_environment_valid() {
+            let environment = "key1=value1,key2=value2";
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 2);
+            assert_eq!(result.iter().nth(0).unwrap(), "key1=value1");
+            assert_eq!(result.iter().nth(1).unwrap(), "key2=value2");
+        }
+
+        #[test]
+        fn test_parse_environment_invalid() {
+            let environment = "";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+    }
+
+    mod parse_directory_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_directory_valid() {
+            let directory = "/tmp";
+            let result = ProgramParser::parse_directory(directory).unwrap();
+            assert_eq!(result, "/tmp");
+        }
+    }
+
+    mod parse_umask_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_umask_valid() {
+            let umask = "0777";
+            let result = ProgramParser::parse_umask(umask).unwrap();
+            assert_eq!(result, 777);
+        }
+
+        #[test]
+        fn test_parse_umask_invalid() {
+            let umask = "abc";
+            let result = ProgramParser::parse_umask(umask);
+            assert!(result.is_err());
+        }
+    }
 }
