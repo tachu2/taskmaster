@@ -160,8 +160,6 @@ impl ProgramParser {
             list.push_back(format!("{}={}", cur_key, cur_value));
             cur_state = State::End;
         }
-        println!("Parsed environment: {:?}", list);
-        println!("Current state: {:?}", cur_state);
         if cur_state != State::Start && cur_state != State::End {
             Err(ConfigParseError::UnexpectedValue(environment.to_string()))?;
         }
