@@ -183,4 +183,43 @@ mod tests {
             assert_eq!(result.iter().nth(2).unwrap(), "spaces");
         }
     }
+
+    mod parse_numprocs_tests {
+        use super::*;
+
+        #[test]
+        fn test_parse_numprocs_valid() {
+            let numprocs = "5";
+            let result = ProgramParser::parse_numprocs(numprocs).unwrap();
+            assert_eq!(result, 5);
+        }
+
+        #[test]
+        fn test_parse_numprocs_invalid() {
+            let numprocs = "abc";
+            let result = ProgramParser::parse_numprocs(numprocs);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_numprocs_zero() {
+            let numprocs = "0";
+            let result = ProgramParser::parse_numprocs(numprocs).unwrap();
+            assert_eq!(result, 0);
+        }
+
+        #[test]
+        fn test_parse_numprocs_max() {
+            let numprocs = "255";
+            let result = ProgramParser::parse_numprocs(numprocs).unwrap();
+            assert_eq!(result, 255);
+        }
+
+        #[test]
+        fn test_parse_numprocs_out_of_range() {
+            let numprocs = "256";
+            let result = ProgramParser::parse_numprocs(numprocs);
+            assert!(result.is_err());
+        }
+    }
 }
