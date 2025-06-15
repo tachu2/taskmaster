@@ -90,15 +90,85 @@ impl ProgramParser {
     }
 
     pub fn parse_environment(environment: &str) -> Result<LinkedList<String>, ConfigParseError> {
-        let list = environment
-            .split(|c| c == ',' || c == ' ' || c == '\t')
-            .filter(|s| !s.is_empty())
-            .map(String::from)
-            .collect::<LinkedList<_>>();
-        if list.is_empty() {
+        #[derive(Debug, PartialEq)]
+        enum State {
+            Start,
+            Key,
+            Value,
+            QuoteedValue,
+            End,
+        }
+
+        let mut list: LinkedList<String> = LinkedList::new();
+        let chars: Vec<char> = environment.chars().collect();
+        let mut i = 0;
+        let mut cur_key: String = String::new();
+        let mut cur_value: String = String::new();
+        let mut cur_state = State::Start;
+        let mut delimiter: char = '\0';
+        while i < chars.len() {
+            let c = chars[i];
+            match cur_state {
+                State::Start => {
+                    if c.is_whitespace() {
+                        i += 1;
+                        continue;
+                    }
+                    cur_state = State::Key;
+                }
+                State::Key => {
+                    if c == '=' {
+                        parse_enviroment_key(&cur_key)?;
+                        cur_state = State::Value;
+                        i += 1;
+                    } else {
+                        cur_key.push(c);
+                    }
+                }
+                State::Value => match c {
+                    '\'' | '"' => {
+                        cur_state = State::QuoteedValue;
+                        delimiter = c;
+                        i += 1;
+                    }
+                    c if c.is_whitespace() || c == ',' => {
+                        list.push_back(format!("{}={}", cur_key, cur_value));
+                        cur_state = State::End;
+                        i += 1;
+                    }
+                    c => cur_key.push(c),
+                },
+                State::QuoteedValue => {
+                    if c == delimiter {
+                        i += 1;
+                        delimiter = '\0';
+                    } else {
+                        cur_value.push(c);
+                    }
+                }
+                State::End => {
+                    cur_key.clear();
+                    cur_value.clear();
+                    delimiter = '\0';
+                    cur_state = State::Start;
+                }
+            }
+        }
+        if !cur_value.is_empty() {
+            list.push_back(format!("{}={}", cur_key, cur_value));
+            cur_state = State::End;
+        }
+        if cur_state != State::Start && cur_state != State::End {
             Err(ConfigParseError::UnexpectedValue(environment.to_string()))?;
         }
         Ok(list)
+    }
+
+    fn parse_enviroment_key(key: &str) -> Result<(), ConfigParseError> {
+        if key.is_empty() {
+            return Err(ConfigParseError::UnexpectedValue(key.to_string()));
+        }
+        Ok(())
     }
 
     pub fn parse_directory(directory: &str) -> Result<String, ConfigParseError> {
@@ -406,7 +476,7 @@ mod tests {
         use super::*;
 
         #[test]
-        fn test_parse_environment_valid() {
+        fn test_parse_environment_without_double_quotes() {
             let environment = "key1=value1,key2=value2";
             let result = ProgramParser::parse_environment(environment).unwrap();
             assert_eq!(result.len(), 2);
@@ -415,8 +485,24 @@ mod tests {
         }
 
         #[test]
-        fn test_parse_environment_invalid() {
+        fn test_parse_environment_with_double_quotes() {
+            let environment = "key1=\"value1, test\",key2=\"value2\"";
+            let result = ProgramParser::parse_environment(environment).unwrap();
+            assert_eq!(result.len(), 2);
+            assert_eq!(result.iter().nth(0).unwrap(), "key1=\"value1, test\"");
+            assert_eq!(result.iter().nth(1).unwrap(), "key2=value2");
+        }
+
+        #[test]
+        fn test_parse_environment_empty() {
             let environment = "";
+            let result = ProgramParser::parse_environment(environment);
+            assert!(result.is_err());
+        }
+
+        #[test]
+        fn test_parse_environment_spaces() {
+            let environment = "     ";
             let result = ProgramParser::parse_environment(environment);
             assert!(result.is_err());
         }
