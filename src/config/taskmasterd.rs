@@ -2,14 +2,14 @@ use std::fmt::Display;
 
 use super::logger::LogLevel;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Taskmasterd {
     pub(in crate::config) logfile: String,
     pub(in crate::config) loglevel: LogLevel,
 }
 
 impl Taskmasterd {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Taskmasterd {
             logfile: String::new(),
             loglevel: LogLevel::INFO,

@@ -9,19 +9,17 @@ use crate::errors::ProgramBuilderError;
 use crate::{config::config::Config, errors::ConfigParseError};
 use ini::{Ini, Properties};
 
-use super::logger::{self, get_logger};
+use super::logger::LogLevel;
 use super::program::{Program, ProgramSection};
-use super::{
-    logger::{LogLevel, Logger},
-    taskmasterd::Taskmasterd,
-};
+use super::runtimecontext::{self, RuntimeContext};
+use super::taskmasterd::Taskmasterd;
 
 impl Adapter {
     pub fn parse_config(
-        config: &mut Config,
+        runtimecontext: &mut RuntimeContext,
         file_path: Option<&String>,
     ) -> Result<(), ConfigParseError> {
-        let logger = get_logger();
+        let logger = &mut runtimecontext.logger;
         logger.info("Parsing configuration file.");
         let file_path = match file_path {
             Some(path) => path.to_string(),
@@ -33,11 +31,11 @@ impl Adapter {
             match sec {
                 Some(taskmasterd::TASKMASTERD) => {
                     logger.debug("Parsing taskmasterd section.");
-                    Self::parse_taskmasterd(config, prop)?;
+                    Self::parse_taskmasterd(&mut runtimecontext, prop)?;
                 }
                 Some(s) if s.starts_with(program::PROGRAM) => {
                     logger.debug(&format!("Parsing program section: {}", s));
-                    Self::parse_program(config, s, prop)?;
+                    Self::parse_program(&mut runtimecontext, s, prop)?;
                 }
                 Some(s) => {
                     logger.error(&format!("Parsing unknown section: {}", s));
@@ -52,8 +50,12 @@ impl Adapter {
         Ok(())
     }
 
-    fn parse_taskmasterd(config: &mut Config, prop: &Properties) -> Result<(), ConfigParseError> {
-        let logger = get_logger();
+    fn parse_taskmasterd(
+        runtimecontext: &mut RuntimeContext,
+        prop: &Properties,
+    ) -> Result<(), ConfigParseError> {
+        let logger = &mut runtimecontext.logger;
+        let config = &mut runtimecontext.config;
         for (key, value) in prop.iter() {
             let section_value = TaskmasterdSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
@@ -67,14 +69,16 @@ impl Adapter {
                         .ok_or_else(|| ConfigParseError::UnexpectedValue(value.to_string()))?;
                     logger.debug(&format!("loglevel: {:?}", value));
                     config.taskmasterd.loglevel = value;
+                    logger.change_level(value);
                 }
             }
+            logger.enable();
         }
         Ok(())
     }
 
     fn parse_program(
-        config: &mut Config,
+        runtimecontext: &mut RuntimeContext,
         sec: &str,
         prop: &Properties,
     ) -> Result<(), ConfigParseError> {
@@ -83,6 +87,7 @@ impl Adapter {
             return Err(ConfigParseError::UnexpectedValue(sec.to_string()));
         }
         let program_name = parts[1].to_string();
+        let config = &mut runtimecontext.config;
         if config.programs.contains_key(&program_name) {
             return Err(ConfigParseError::DuplicatedValue(program_name));
         }

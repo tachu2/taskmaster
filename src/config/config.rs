@@ -3,17 +3,17 @@ use std::collections::HashMap;
 use crate::{config::config, config::taskmasterd::Taskmasterd};
 use crate::{config::program::Program, errors::ConfigParseError};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Config {
     pub(in crate::config) programs: HashMap<String, Program>,
     pub(in crate::config) taskmasterd: Taskmasterd,
 }
 
 impl Config {
-    pub fn new() -> Self {
+    pub fn default() -> Self {
         Config {
             programs: HashMap::new(),
-            taskmasterd: Taskmasterd::new(),
+            taskmasterd: Taskmasterd::default(),
         }
     }
 

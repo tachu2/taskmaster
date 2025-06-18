@@ -1,10 +1,10 @@
 use chrono::Local;
-use lazy_static::lazy_static;
 use std::sync::Mutex;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum LogLevel {
     DEBUG,
+    #[default]
     INFO,
     WARN,
     ERROR,
@@ -36,12 +36,24 @@ impl LogLevel {
     }
 }
 
+#[derive(Debug, Clone, Default)]
 pub struct Logger {
     level: LogLevel,
+    enabled: bool,
 }
 
 impl Logger {
+    pub fn default() -> Self {
+        Logger {
+            level: LogLevel::INFO,
+            enabled: false,
+        }
+    }
+
     fn log(&self, level: LogLevel, message: &str) {
+        if !self.enabled {
+            return;
+        }
         let now = Local::now();
         let timestamp = now.format("%Y/%m/%d %H:%M:%S").to_string();
         println!("[{}] [{}] {}", timestamp, level, message);
@@ -85,18 +97,10 @@ impl Logger {
     pub fn change_level(&mut self, level: LogLevel) {
         self.level = level;
     }
-}
 
-lazy_static! {
-    static ref LOGGER: Mutex<Logger> = Mutex::new(Logger {
-        level: LogLevel::DEBUG
-    });
-}
-
-///
-///INFO: never panic as long as it runs on single thread or does not panic when locking
-pub fn get_logger() -> std::sync::MutexGuard<'static, Logger> {
-    LOGGER.lock().expect("Failed to lock LOGGER")
+    pub fn enable(&mut self) {
+        self.enabled = true;
+    }
 }
 
 mod logger {
