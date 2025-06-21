@@ -16,11 +16,10 @@ use super::taskmasterd::Taskmasterd;
 
 impl Adapter {
     pub fn parse_config(
-        runtimecontext: &mut RuntimeContext,
+        rc: &mut RuntimeContext,
         file_path: Option<&String>,
     ) -> Result<(), ConfigParseError> {
-        let logger = &mut runtimecontext.logger;
-        logger.info("Parsing configuration file.");
+        rc.logger.info("Parsing configuration file.");
         let file_path = match file_path {
             Some(path) => path.to_string(),
             None => Config::find_config()?,
@@ -30,20 +29,20 @@ impl Adapter {
         for (sec, prop) in ini.iter() {
             match sec {
                 Some(taskmasterd::TASKMASTERD) => {
-                    logger.debug("Parsing taskmasterd section.");
-                    Self::parse_taskmasterd(&mut runtimecontext, prop)?;
+                    rc.logger.debug("Parsing taskmasterd section.");
+                    Self::parse_taskmasterd(rc, prop)?;
                 }
                 Some(s) if s.starts_with(program::PROGRAM) => {
-                    logger.debug(&format!("Parsing program section: {}", s));
-                    Self::parse_program(&mut runtimecontext, s, prop)?;
+                    rc.logger.debug(&format!("Parsing program section: {}", s));
+                    Self::parse_program(rc, s, prop)?;
                 }
                 Some(s) => {
-                    logger.error(&format!("Parsing unknown section: {}", s));
+                    rc.logger.error(&format!("Parsing unknown section: {}", s));
                     return Err(ConfigParseError::UnexpectedValue(s.to_string()));
                 }
                 // the first section is always None so don't do anything
                 None => {
-                    logger.debug("Skipping empty section.");
+                    rc.logger.debug("Skipping empty section.");
                 }
             }
         }
@@ -51,11 +50,11 @@ impl Adapter {
     }
 
     fn parse_taskmasterd(
-        runtimecontext: &mut RuntimeContext,
+        rc: &mut RuntimeContext,
         prop: &Properties,
     ) -> Result<(), ConfigParseError> {
-        let logger = &mut runtimecontext.logger;
-        let config = &mut runtimecontext.config;
+        let logger = &mut rc.logger;
+        let config = &mut rc.config;
         for (key, value) in prop.iter() {
             let section_value = TaskmasterdSection::from_str(key)
                 .ok_or_else(|| ConfigParseError::UnexpectedValue(key.to_string()))?;
@@ -78,7 +77,7 @@ impl Adapter {
     }
 
     fn parse_program(
-        runtimecontext: &mut RuntimeContext,
+        rc: &mut RuntimeContext,
         sec: &str,
         prop: &Properties,
     ) -> Result<(), ConfigParseError> {
@@ -87,7 +86,7 @@ impl Adapter {
             return Err(ConfigParseError::UnexpectedValue(sec.to_string()));
         }
         let program_name = parts[1].to_string();
-        let config = &mut runtimecontext.config;
+        let config = &mut rc.config;
         if config.programs.contains_key(&program_name) {
             return Err(ConfigParseError::DuplicatedValue(program_name));
         }
