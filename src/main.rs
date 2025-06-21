@@ -29,6 +29,7 @@ fn main() {
     if let Err(e) = Adapter::parse_config(&mut runtime_context, file_path) {
         eprintln!("Error parsing config: {}", e);
     }
+    runtime_context.logger.info("starting taskmasterd");
     match commandline::CommandLine::readline() {
         Ok(line) => {
             println!("Command: {:?}", line);

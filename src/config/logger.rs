@@ -3,6 +3,7 @@ use std::sync::Mutex;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum LogLevel {
+    TRACE,
     DEBUG,
     #[default]
     INFO,
@@ -14,6 +15,7 @@ pub enum LogLevel {
 impl std::fmt::Display for LogLevel {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            LogLevel::TRACE => write!(f, "TRACE"),
             LogLevel::DEBUG => write!(f, "DEBUG"),
             LogLevel::INFO => write!(f, "INFO"),
             LogLevel::WARN => write!(f, "WARN"),
@@ -26,6 +28,7 @@ impl std::fmt::Display for LogLevel {
 impl LogLevel {
     pub fn from_str(s: &str) -> Option<Self> {
         match s.to_uppercase().as_str() {
+            logger::TRACE => Some(LogLevel::TRACE),
             logger::DEBUG => Some(LogLevel::DEBUG),
             logger::INFO => Some(LogLevel::INFO),
             logger::WARN => Some(LogLevel::WARN),
@@ -57,6 +60,13 @@ impl Logger {
         let now = Local::now();
         let timestamp = now.format("%Y/%m/%d %H:%M:%S").to_string();
         println!("[{}] [{}] {}", timestamp, level, message);
+    }
+
+    pub fn trace(&self, message: &str) {
+        if self.level > LogLevel::TRACE {
+            return;
+        }
+        self.log(LogLevel::TRACE, message);
     }
 
     pub fn debug(&self, message: &str) {
@@ -104,6 +114,7 @@ impl Logger {
 }
 
 mod logger {
+    pub const TRACE: &str = "TRACE";
     pub const DEBUG: &str = "DEBUG";
     pub const INFO: &str = "INFO";
     pub const WARN: &str = "WARN";
