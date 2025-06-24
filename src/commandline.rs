@@ -35,11 +35,11 @@ impl CommandLine {
         CommandLine::new_from_list(list).ok_or_else(|| CommandLineError::EmptyCommand)
     }
 
-    pub fn get_command(&self) -> &String {
+    pub fn command(&self) -> &String {
         &self.command
     }
 
-    pub fn get_args(&self) -> &LinkedList<String> {
+    pub fn args(&self) -> &LinkedList<String> {
         &self.args
     }
 }

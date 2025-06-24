@@ -1,6 +1,7 @@
 mod commandline;
 mod config;
 mod errors;
+mod exec;
 
 use commandline::CommandLine;
 use config::{
@@ -8,7 +9,10 @@ use config::{
     logger::{LogLevel, Logger},
     runtimecontext::RuntimeContext,
 };
+use errors::CommandLineError::EmptyCommand;
 use std::env;
+
+use exec::command_loop::command_loop;
 
 fn usage(s: &str) {
     eprintln!("Usage: {} <config_file_path>", s);
@@ -30,12 +34,5 @@ fn main() {
         eprintln!("Error parsing config: {}", e);
     }
     runtime_context.logger.info("starting taskmasterd");
-    match commandline::CommandLine::readline() {
-        Ok(line) => {
-            println!("Command: {:?}", line);
-        }
-        Err(e) => {
-            eprintln!("Error reading line: {}", e);
-        }
-    }
+    command_loop(runtime_context);
 }
